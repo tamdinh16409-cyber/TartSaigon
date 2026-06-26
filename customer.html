@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tart Coffee - Đặt Hàng Trực Tuyến</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Header for Customer Portal -->
+        <header class="main-header">
+            <div class="logo-section">
+    <img src="img/logo.jpg" alt="Tart Saigon Logo" class="header-logo">
+
+    <div class="logo-text">
+        <h1>Tart Saigon</h1>
+        <span>Customer Ordering App</span>
+    </div>
+</div>
+            
+            <!-- Quick navigation to staff portal for demo convenience -->
+            <div class="role-switcher-container">
+                <a href="index.html" class="btn btn-sm btn-secondary" style="border-color: var(--color-primary); color: var(--color-primary);">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Mở Trang Quản Lý/Nhân Viên
+                </a>
+            </div>
+
+            <!-- Profile / Info section -->
+            <div class="user-status-section" id="user-status-widget">
+                <!-- Dynamic content via JS -->
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="main-content">
+            
+            <div class="customer-layout">
+                <!-- Left Side: Menu and Shop -->
+                <div class="menu-column">
+                    <!-- Hero Banner -->
+                    <div class="hero-banner glass-card">
+                        <div class="hero-text">
+                            <h2>Chào mừng đến với Tart Coffee!</h2>
+                            <p>Thưởng thức hương vị cà phê đậm đà, tích điểm đổi quà và tận hưởng ưu đãi đặc quyền.</p>
+                            <div class="hero-actions">
+                                <button class="btn btn-primary" onclick="openVouchersModal()"><i class="fa-solid fa-gift"></i> Đổi thưởng</button>
+                                <button class="btn btn-secondary" onclick="openTopupModal()"><i class="fa-solid fa-wallet"></i> Nạp Ví Tart Card</button>
+                            </div>
+                        </div>
+                        <div class="hero-image-placeholder">
+                            <i class="fa-solid fa-champagne-glasses"></i>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Tabs -->
+                    <div class="customer-tabs">
+                        <button class="tab-btn active" onclick="switchCustomerTab('menu-tab')"><i class="fa-solid fa-list"></i> Thực đơn</button>
+                        <button class="tab-btn" onclick="switchCustomerTab('history-tab')"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử đơn</button>
+                        <button class="tab-btn" onclick="switchCustomerTab('giftcard-tab')"><i class="fa-solid fa-gift"></i> Gửi Thẻ Quà Tặng</button>
+                    </div>
+
+                    <!-- Menu Tab Content -->
+                    <div id="menu-tab" class="customer-tab-content active">
+                        <!-- Filter & Search Bar -->
+                        <div class="filter-bar glass-card">
+                            <div class="search-box">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" id="menu-search" placeholder="Tìm kiếm món ăn, thức uống..." oninput="filterMenu()">
+                            </div>
+                            <div class="category-filters">
+                                <button class="cat-btn active" data-category="all">Tất cả</button>
+                                <button class="cat-btn" data-category="coffee">Cà phê</button>
+                                <button class="cat-btn" data-category="tea">Trà trái cây</button>
+                                <button class="cat-btn" data-category="pastry">Bánh ngọt</button>
+                                <button class="cat-btn" data-category="favorites"><i class="fa-solid fa-heart"></i> Yêu thích</button>
+                            </div>
+                        </div>
+
+                        <!-- Menu Grid -->
+                        <div class="menu-grid" id="menu-items-container">
+                            <!-- Dynamic JS Cards -->
+                        </div>
+                    </div>
+
+                    <!-- History & E-invoice Tab Content -->
+                    <div id="history-tab" class="customer-tab-content">
+                        <div class="history-container glass-card">
+                            <h3>Lịch sử đơn hàng</h3>
+                            <div class="history-list" id="order-history-list">
+                                <!-- Dynamic JS History entries -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gift Card Tab Content -->
+                    <div id="giftcard-tab" class="customer-tab-content">
+                        <div class="giftcard-container glass-card">
+                            <div class="giftcard-header">
+                                <h3>Mua & Gửi Thẻ Quà Tặng</h3>
+                                <p>Gửi những ly cà phê ấm áp cùng lời chúc ý nghĩa đến người thân yêu.</p>
+                            </div>
+                            <form id="gift-card-form" class="giftcard-form" onsubmit="sendGiftCard(event)">
+                                <div class="form-group">
+                                    <label>Chọn mệnh giá thẻ</label>
+                                    <div class="giftcard-options">
+                                        <div class="gift-option active" data-val="50000">50,000đ</div>
+                                        <div class="gift-option" data-val="100000">100,000đ</div>
+                                        <div class="gift-option" data-val="200000">200,000đ</div>
+                                        <div class="gift-option" data-val="500000">500,000đ</div>
+                                        <input type="hidden" id="gift-card-val-input" value="50000">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gift-receiver">Email/Tên người nhận</label>
+                                    <input type="text" id="gift-receiver" placeholder="Nhập tên hoặc email..." required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gift-message">Lời chúc</label>
+                                    <textarea id="gift-message" rows="3" placeholder="Chúc bạn một ngày làm việc hiệu quả và tràn đầy năng lượng..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-paper-plane"></i> Thanh toán & Gửi quà</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Use Case Diagram Tab Content -->
+                    <div id="diagram-tab" class="customer-tab-content">
+                        <div class="diagram-display glass-card">
+                            <h3>Sơ đồ Use Case - Khách hàng</h3>
+                            <p class="diagram-desc">Sơ đồ mô tả các tác vụ khách hàng thực hiện (đặt hàng, nạp tiền ví, đổi thưởng, đánh giá...).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side: Wallet, Loyalty and Cart Sidebar -->
+                <div class="cart-sidebar-column">
+                    <!-- Loyalty / Wallet Card -->
+                    <div class="loyalty-card-widget glass-card">
+                        <div class="loyalty-badge"><i class="fa-solid fa-crown"></i> <span id="loyalty-tier">Gold Member</span></div>
+                        <div class="widget-details">
+                            <div class="detail-item">
+                                <span class="label">Số dư Tart Card:</span>
+                                <span class="value font-lg" id="widget-wallet-bal">150,000đ</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Điểm tích lũy:</span>
+                                <span class="value text-accent" id="widget-points">120 điểm</span>
+                            </div>
+                        </div>
+                        <!-- Points Progress Bar -->
+                        <div class="progress-container">
+                            <div class="progress-bar" id="points-progress" style="width: 60%"></div>
+                            <div class="progress-labels">
+                                <span>0 điểm</span>
+                                <span id="next-tier-label">80 điểm đến bậc Platinum</span>
+                                <span>200</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Fast Topup / Claim Voucher -->
+                        <div class="widget-actions">
+                            <button class="btn btn-sm btn-primary-outline" onclick="openTopupModal()"><i class="fa-solid fa-plus"></i> Nạp Ví</button>
+                            <button class="btn btn-sm btn-accent-outline" onclick="openVouchersModal()"><i class="fa-solid fa-tags"></i> Vouchers của tôi</button>
+                        </div>
+                    </div>
+
+                    <!-- Cart Sidebar -->
+                    <div class="cart-widget glass-card" id="cart-container">
+                        <div class="cart-header">
+                            <h3><i class="fa-solid fa-shopping-bag"></i> Giỏ hàng của bạn</h3>
+                            <span class="cart-count-badge" id="cart-count">0 món</span>
+                        </div>
+                        
+                        <div class="cart-items" id="cart-items-list">
+                            <!-- Dynamic JS Cart items -->
+                            <div class="empty-cart-message">
+                                <i class="fa-solid fa-mug-hot"></i>
+                                <p>Chưa có sản phẩm nào trong giỏ hàng.</p>
+                            </div>
+                        </div>
+
+                        <div class="cart-checkout-details" id="cart-summary" style="display: none;">
+                            <!-- Order Fulfillment Method -->
+                            <div class="fulfillment-selector">
+                                <button class="fulfill-btn active" id="fulfill-pickup" onclick="setFulfillment('pickup')">
+                                    <i class="fa-solid fa-store"></i> Tự nhận tại quán
+                                </button>
+                                <button class="fulfill-btn" id="fulfill-delivery" onclick="setFulfillment('delivery')">
+                                    <i class="fa-solid fa-truck"></i> Giao hàng tận nơi
+                                </button>
+                            </div>
+
+                            <!-- Address details for delivery -->
+                            <div class="address-input-group" id="delivery-address-container" style="display: none;">
+                                <label for="delivery-address"><i class="fa-solid fa-location-dot"></i> Địa chỉ giao hàng</label>
+                                <input type="text" id="delivery-address" placeholder="Nhập số nhà, tên đường, quận...">
+                            </div>
+
+                            <!-- Voucher Selection -->
+                            <div class="voucher-apply-box">
+                                <div class="voucher-input">
+                                    <i class="fa-solid fa-tag"></i>
+                                    <input type="text" id="voucher-input-code" placeholder="Mã giảm giá (ví dụ: TARTWELCOME)">
+                                    <button class="btn btn-sm btn-accent" onclick="applyVoucher()">Áp dụng</button>
+                                </div>
+                                <div id="applied-voucher-info" class="applied-voucher-info" style="display:none;"></div>
+                            </div>
+
+                            <!-- Calculation Table -->
+                            <div class="bill-calculation">
+                                <div class="calc-row">
+                                    <span>Tạm tính</span>
+                                    <span id="bill-subtotal">0đ</span>
+                                </div>
+                                <div class="calc-row text-danger" id="row-discount" style="display:none;">
+                                    <span>Giảm giá</span>
+                                    <span id="bill-discount">-0đ</span>
+                                </div>
+                                <div class="calc-row text-accent" id="row-delivery-fee" style="display:none;">
+                                    <span>Phí giao hàng</span>
+                                    <span id="bill-delivery-fee">15,000đ</span>
+                                </div>
+                                <hr>
+                                <div class="calc-row total-row">
+                                    <span>Tổng cộng</span>
+                                    <span id="bill-total" class="text-primary font-lg">0đ</span>
+                                </div>
+                            </div>
+
+                            <!-- Payment Selector -->
+                            <div class="payment-method-selector">
+                                <label>Hình thức thanh toán</label>
+                                <div class="payment-options">
+                                    <div class="pay-option active" data-method="wallet">
+                                        <i class="fa-solid fa-wallet"></i>
+                                        <div>
+                                            <strong>Ví Tart Card</strong>
+                                            <span id="cart-wallet-available">Số dư: 150k</span>
+                                        </div>
+                                    </div>
+                                    <div class="pay-option" data-method="gateway">
+                                        <i class="fa-solid fa-credit-card"></i>
+                                        <div>
+                                            <strong>Thẻ / Cổng ngoài</strong>
+                                            <span>ATM, Visa, Momo...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-block btn-lg" onclick="checkoutOrder()"><i class="fa-solid fa-check"></i> Xác nhận thanh toán & Đặt hàng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- GLOBAL DIALOGS & OVERLAYS -->
+
+    <!-- LOGIN / REGISTER DIALOG -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-content glass-card login-modal-box">
+            <div class="modal-header">
+                <h3>Đăng ký / Đăng nhập thành viên</h3>
+                <button class="close-modal-btn" onclick="closeModal('login-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="login-tabs">
+                    <button class="login-tab-btn active" onclick="switchLoginTab('login-form')">Đăng nhập</button>
+                    <button class="login-tab-btn" onclick="switchLoginTab('register-form')">Đăng ký mới</button>
+                </div>
+                
+                <!-- Login form -->
+                <form id="login-form" class="login-form-tab active" onsubmit="handleLoginSubmit(event)">
+                    <div class="form-group">
+                        <label for="login-username">Tên tài khoản</label>
+                        <input type="text" id="login-username" placeholder="Nhập tên đăng nhập..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Mật khẩu</label>
+                        <input type="password" id="login-password" placeholder="Nhập mật khẩu..." required>
+                    </div>
+                    <!-- Quick Autofill for testing -->
+                    <div class="quick-autofill">
+                        <span>Đăng nhập nhanh:</span>
+                        <div class="autofill-tags">
+                            <span onclick="autofillLogin('khachhang', '123456')">Nguyễn Văn A</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+                </form>
+
+                <!-- Register form -->
+                <form id="register-form" class="login-form-tab" onsubmit="handleRegisterSubmit(event)">
+                    <div class="form-group">
+                        <label for="reg-name">Họ & Tên khách hàng</label>
+                        <input type="text" id="reg-name" placeholder="Ví dụ: Nguyễn Văn B" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-username">Tên tài khoản</label>
+                        <input type="text" id="reg-username" placeholder="Viết liền không dấu..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Mật khẩu</label>
+                        <input type="password" id="reg-password" placeholder="Tạo mật khẩu..." required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Đăng ký thành viên</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT CUSTOMIZATION MODAL -->
+    <div class="modal-overlay" id="customization-modal">
+        <div class="modal-content glass-card item-customize-modal">
+            <!-- Dynamic JS injected -->
+        </div>
+    </div>
+
+    <!-- E-INVOICE MODAL -->
+    <div class="modal-overlay" id="invoice-modal">
+        <div class="modal-content glass-card invoice-modal-box">
+            <!-- Dynamic JS invoice -->
+        </div>
+    </div>
+
+    <!-- MY VOUCHERS MODAL -->
+    <div class="modal-overlay" id="vouchers-modal">
+        <div class="modal-content glass-card vouchers-modal-box">
+            <div class="modal-header">
+                <h3>Vouchers của bạn & Tích điểm đổi thưởng</h3>
+                <button class="close-modal-btn" onclick="closeModal('vouchers-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="loyalty-points-bar">
+                    <span>Bạn có: <strong class="text-accent" id="loyalty-claim-points">120</strong> điểm</span>
+                    <p>Đổi điểm lấy thẻ giảm giá để áp dụng trực tiếp tại bước đặt hàng.</p>
+                </div>
+                
+                <div class="rewards-claim-list">
+                    <h4>Đổi điểm nhận Voucher</h4>
+                    <div class="reward-claim-card">
+                        <div class="reward-info">
+                            <h5>Voucher giảm giá 15k</h5>
+                            <p>Yêu cầu: 50 điểm tích lũy</p>
+                        </div>
+                        <button class="btn btn-sm btn-accent" onclick="claimReward(50, 15000, 'Giảm 15k khi đổi 50 điểm')">Đổi voucher</button>
+                    </div>
+                    <div class="reward-claim-card">
+                        <div class="reward-info">
+                            <h5>Voucher giảm giá 40k</h5>
+                            <p>Yêu cầu: 100 điểm tích lũy</p>
+                        </div>
+                        <button class="btn btn-sm btn-accent" onclick="claimReward(100, 40000, 'Giảm 40k khi đổi 100 điểm')">Đổi voucher</button>
+                    </div>
+                </div>
+                
+                <div class="my-vouchers-list-container">
+                    <h4>Mã giảm giá đang sở hữu</h4>
+                    <div class="my-vouchers-list" id="user-vouchers-list">
+                        <!-- Dynamic list of user owned vouchers -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WALLET TOPUP MODAL -->
+    <div class="modal-overlay" id="topup-modal">
+        <div class="modal-content glass-card topup-modal-box">
+            <div class="modal-header">
+                <h3>Nạp tiền vào ví Tart Card</h3>
+                <button class="close-modal-btn" onclick="closeModal('topup-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Nạp tiền vào ví Tart Card để được tích thêm 5% điểm thưởng trên mỗi giao dịch và thanh toán nhanh chóng hơn.</p>
+                <form id="wallet-topup-form" onsubmit="triggerWalletTopup(event)">
+                    <div class="form-group">
+                        <label>Chọn số tiền cần nạp</label>
+                        <div class="topup-amounts-grid">
+                            <div class="topup-amount-btn active" data-val="50000">50,000đ</div>
+                            <div class="topup-amount-btn" data-val="100000">100,000đ</div>
+                            <div class="topup-amount-btn" data-val="200000">200,000đ</div>
+                            <div class="topup-amount-btn" data-val="500000">500,000đ</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="custom-topup-amount">Hoặc nhập số tiền khác (đ)</label>
+                        <input type="number" id="custom-topup-amount" placeholder="Ví dụ: 150000">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-credit-card"></i> Tiếp tục qua Cổng thanh toán</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Customer JavaScript -->
+    <script src="customer.js"></script>
+</body>
+</html>

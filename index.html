@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tart Coffee - Cổng Vận Hành & Quản Trị</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Header / Role Switcher -->
+        <header class="main-header">
+            <div class="logo-section">
+<img src="img/logo.jpg" alt="Tart Saigon Logo" class="header-logo">                <div class="logo-text">
+                    <h1>Tart Saigon</h1>
+                    <span>Operations & Admin Portal</span>
+                </div>
+            </div>
+            
+            <!-- Quick Role Selector for Demo -->
+            <div class="role-switcher-container">
+                <span class="role-label"><i class="fa-solid fa-users-gear"></i> Vai trò vận hành:</span>
+                <div class="role-buttons">
+                    <a href="customer.html" class="role-btn" style="text-decoration:none;"><i class="fa-solid fa-shopping-bag"></i> Khách hàng (Mở Trang Riêng)</a>
+                    <button class="role-btn active" data-role="barista"><i class="fa-solid fa-mug-saucer"></i> Barista/POS</button>
+                    <button class="role-btn" data-role="admin"><i class="fa-solid fa-user-shield"></i> Admin</button>
+                    <button class="role-btn" data-role="delivery"><i class="fa-solid fa-truck"></i> Giao hàng</button>
+                    <button class="role-btn" data-role="payment"><i class="fa-solid fa-credit-card"></i> Cổng thanh toán</button>
+                </div>
+            </div>
+
+            <!-- Profile / Info section -->
+            <div class="user-status-section" id="user-status-widget">
+                <!-- Dynamic content via JS -->
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="main-content">
+            
+            <!-- 1. BARISTA / POS VIEW -->
+            <section id="barista-view" class="portal-view active">
+                <!-- Tab Bar -->
+                <div class="barista-tabs-header">
+                    <button class="barista-tab-btn active" data-tab="queue" onclick="switchBaristaTab('queue')">
+                        <i class="fa-solid fa-list-check"></i> Hàng đợi đơn hàng
+                    </button>
+                    <button class="barista-tab-btn" data-tab="pos" onclick="switchBaristaTab('pos')">
+                        <i class="fa-solid fa-cash-register"></i> POS — Nhận & Tạo đơn
+                    </button>
+                </div>
+
+                <!-- Tab 1: Order Queue -->
+                <div id="barista-queue-tab" class="barista-tab-content">
+                    <div class="barista-layout">
+                        <div class="orders-board-column">
+                            <div class="section-title">
+                                <h2><i class="fa-solid fa-list-check"></i> Màn hình xử lý đơn hàng tại POS</h2>
+                                <button class="btn btn-secondary btn-sm" onclick="openDiagramModal('barista')"><i class="fa-solid fa-circle-info"></i> Xem Sơ đồ Use Case</button>
+                            </div>
+                            <div class="orders-kanban-board">
+                                <div class="kanban-column" id="col-pending">
+                                    <div class="column-header bg-pending"><h3>Chờ pha chế (<span id="count-pending">0</span>)</h3></div>
+                                    <div class="kanban-cards-list" id="list-pending"></div>
+                                </div>
+                                <div class="kanban-column" id="col-brewing">
+                                    <div class="column-header bg-brewing"><h3>Đang thực hiện (<span id="count-brewing">0</span>)</h3></div>
+                                    <div class="kanban-cards-list" id="list-brewing"></div>
+                                </div>
+                                <div class="kanban-column" id="col-ready">
+                                    <div class="column-header bg-ready"><h3>Sẵn sàng giao (<span id="count-ready">0</span>)</h3></div>
+                                    <div class="kanban-cards-list" id="list-ready"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stock-manager-column">
+                            <div class="glass-card">
+                                <h3><i class="fa-solid fa-warehouse"></i> Quản lý Thực đơn & Kho</h3>
+                                <p class="section-subtitle">Bật / Tắt trạng thái các món ăn và nguyên vật liệu thô chính.</p>
+                                <div class="inventory-status-section">
+                                    <h4>Mức nguyên vật liệu trong kho</h4>
+                                    <div class="ingredient-stat">
+                                        <span>Hạt Cà Phê Arabica</span>
+                                        <div class="progress-container"><div class="progress-bar bg-primary" id="inv-coffee" style="width:85%"></div></div>
+                                        <span class="inv-percent" id="inv-coffee-label">85%</span>
+                                    </div>
+                                    <div class="ingredient-stat">
+                                        <span>Sữa tươi nguyên chất</span>
+                                        <div class="progress-container"><div class="progress-bar bg-success" id="inv-milk" style="width:90%"></div></div>
+                                        <span class="inv-percent" id="inv-milk-label">90%</span>
+                                    </div>
+                                    <div class="ingredient-stat">
+                                        <span>Siro & Hương liệu</span>
+                                        <div class="progress-container"><div class="progress-bar bg-accent" id="inv-syrup" style="width:70%"></div></div>
+                                        <span class="inv-percent" id="inv-syrup-label">70%</span>
+                                    </div>
+                                </div>
+                                <div class="menu-stock-list-container">
+                                    <h4>Trạng thái món trong thực đơn</h4>
+                                    <div class="menu-stock-list" id="barista-stock-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: POS Order Taking -->
+                <div id="barista-pos-tab" class="barista-tab-content" style="display:none;">
+                    <div class="pos-layout">
+                        <!-- Left: Menu -->
+                        <div class="pos-menu-panel">
+                            <div class="pos-cat-bar">
+                                <button class="pos-cat-btn active" onclick="filterPosMenu(this,'all')">Tất cả</button>
+                                <button class="pos-cat-btn" onclick="filterPosMenu(this,'coffee')"><i class="fa-solid fa-mug-hot"></i> Cà phê</button>
+                                <button class="pos-cat-btn" onclick="filterPosMenu(this,'tea')"><i class="fa-solid fa-whiskey-glass"></i> Trà</button>
+                                <button class="pos-cat-btn" onclick="filterPosMenu(this,'pastry')"><i class="fa-solid fa-cookie"></i> Bánh</button>
+                            </div>
+                            <div class="pos-menu-grid" id="pos-menu-grid"></div>
+                        </div>
+                        <!-- Right: Cart -->
+                        <div class="pos-cart-panel glass-card">
+                            <div class="pos-cart-header">
+                                <h3><i class="fa-solid fa-receipt"></i> Đơn hàng</h3>
+                                <button class="btn btn-sm btn-danger" onclick="clearPosCart()"><i class="fa-solid fa-trash"></i> Xóa</button>
+                            </div>
+                            <input type="text" id="pos-customer-name" placeholder="Tên khách (không bắt buộc)..." style="width:100%; margin-bottom:12px;">
+                            <div class="pos-cart-items" id="pos-cart-items">
+                                <div class="pos-empty-cart">
+                                    <i class="fa-solid fa-mug-hot"></i>
+                                    <p>Chọn món bên trái để thêm</p>
+                                </div>
+                            </div>
+                            <div class="pos-cart-footer" id="pos-cart-summary" style="display:none;">
+                                <div class="pos-total-row">
+                                    <span>Tổng cộng</span>
+                                    <strong class="pos-total-amount" id="pos-total">0đ</strong>
+                                </div>
+                                <button class="btn btn-primary btn-block btn-lg" onclick="openPosPaymentModal()">
+                                    <i class="fa-solid fa-cash-register"></i> Thanh toán
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. ADMIN VIEW -->
+            <section id="admin-view" class="portal-view">
+                <div class="admin-layout">
+                    <!-- Top stats cards -->
+                    <div class="admin-top-row">
+                        <div class="admin-stat-card glass-card">
+                            <i class="fa-solid fa-dollar-sign bg-success-light"></i>
+                            <div class="stat-content">
+                                <h3>Doanh thu hôm nay</h3>
+                                <span class="stat-value" id="admin-stat-revenue">0đ</span>
+                            </div>
+                        </div>
+                        <div class="admin-stat-card glass-card">
+                            <i class="fa-solid fa-cart-shopping bg-primary-light"></i>
+                            <div class="stat-content">
+                                <h3>Tổng số đơn hàng</h3>
+                                <span class="stat-value" id="admin-stat-orders">0 đơn</span>
+                            </div>
+                        </div>
+                        <div class="admin-stat-card glass-card">
+                            <i class="fa-solid fa-users bg-accent-light"></i>
+                            <div class="stat-content">
+                                <h3>Hội viên hoạt động</h3>
+                                <span class="stat-value" id="admin-stat-loyalty">1 hội viên</span>
+                            </div>
+                        </div>
+                        <div class="admin-stat-card glass-card">
+                            <i class="fa-solid fa-percent bg-danger-light"></i>
+                            <div class="stat-content">
+                                <h3>Khuyến mãi đang chạy</h3>
+                                <span class="stat-value" id="admin-stat-promos">2 mã</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Menu Management Card -->
+                    <div class="glass-card admin-menu-card">
+                        <div class="admin-menu-card-header">
+                            <h3><i class="fa-solid fa-utensils"></i> Quản lý Thực đơn</h3>
+                            <button class="btn btn-primary btn-sm" onclick="openMenuItemModal()">
+                                <i class="fa-solid fa-plus"></i> Thêm món mới
+                            </button>
+                        </div>
+                        <div class="admin-menu-list" id="admin-menu-list">
+                            <!-- Dynamic menu items -->
+                        </div>
+                    </div>
+
+                    <!-- Bottom Row: Split layout -->
+                    <div class="admin-bottom-grid">
+                        
+                        <!-- Left: Revenue Charts & Promo Manager -->
+                        <div class="admin-charts-column">
+                            <!-- Visual Dashboard Chart (SVG based) -->
+                            <div class="glass-card chart-card">
+                                <div class="chart-header">
+                                    <h3><i class="fa-solid fa-chart-line"></i> Biểu đồ Phân tích & Doanh thu</h3>
+                                    <button class="btn btn-secondary btn-sm" onclick="openDiagramModal('admin')"><i class="fa-solid fa-circle-info"></i> Xem Sơ đồ Use Case</button>
+                                </div>
+                                <div class="chart-container">
+                                    <svg viewBox="0 0 600 220" class="revenue-svg-chart">
+                                        <!-- Y-Axis Lines -->
+                                        <line x1="50" y1="20" x2="550" y2="20" stroke="rgba(255,255,255,0.05)" />
+                                        <line x1="50" y1="70" x2="550" y2="70" stroke="rgba(255,255,255,0.05)" />
+                                        <line x1="50" y1="120" x2="550" y2="120" stroke="rgba(255,255,255,0.05)" />
+                                        <line x1="50" y1="170" x2="550" y2="170" stroke="rgba(255,255,255,0.1)" />
+                                        
+                                        <!-- Chart Bars -->
+                                        <g id="chart-bars-group">
+                                            <!-- Dynamically filled with <rect> and <text> -->
+                                        </g>
+
+                                        <!-- Axes Labels -->
+                                        <text x="35" y="25" fill="rgba(255,255,255,0.4)" font-size="10">2M</text>
+                                        <text x="35" y="75" fill="rgba(255,255,255,0.4)" font-size="10">1.2M</text>
+                                        <text x="35" y="125" fill="rgba(255,255,255,0.4)" font-size="10">600K</text>
+                                        <text x="35" y="175" fill="rgba(255,255,255,0.4)" font-size="10">0</text>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Promo codes manager -->
+                            <div class="glass-card promo-manager-card">
+                                <h3><i class="fa-solid fa-tags"></i> Cấu hình Cửa hàng & Khuyến mãi</h3>
+                                <form id="create-promo-form" onsubmit="createNewPromo(event)">
+                                    <div class="form-row-2">
+                                        <div class="form-group">
+                                            <label for="promo-code">Mã code</label>
+                                            <input type="text" id="promo-code" placeholder="VÍ DỤ: TARTGOLD" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="promo-discount">Số tiền giảm (đ)</label>
+                                            <input type="number" id="promo-discount" placeholder="Ví dụ: 30000" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="promo-desc">Mô tả chương trình</label>
+                                        <input type="text" id="promo-desc" placeholder="Ví dụ: Giảm 30k áp dụng cho thẻ Gold..." required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm mã khuyến mãi</button>
+                                </form>
+                                <hr class="divider">
+                                <h4>Danh sách khuyến mãi hiện tại</h4>
+                                <div class="promos-list" id="admin-promos-list">
+                                    <!-- Dynamic list of promotions -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right: CRM & Staff Manager -->
+                        <div class="admin-management-column">
+                            <!-- CRM & Loyalty Management -->
+                            <div class="glass-card admin-crm-card">
+                                <h3><i class="fa-solid fa-users"></i> Quản lý CRM / Loyalty</h3>
+                                <div class="table-responsive">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Khách hàng</th>
+                                                <th>Bậc</th>
+                                                <th>Điểm</th>
+                                                <th>Số dư ví</th>
+                                                <th>Hành động</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="crm-table-body">
+                                            <!-- Dynamic CRM rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Role assignment & Staff management -->
+                            <div class="glass-card admin-staff-card">
+                                <h3><i class="fa-solid fa-user-tie"></i> Phân quyền & Quản trị nhân viên</h3>
+                                <form id="add-staff-form" onsubmit="addStaffMember(event)">
+                                    <div class="form-row-3">
+                                        <input type="text" id="staff-name" placeholder="Tên nhân viên..." required>
+                                        <select id="staff-role">
+                                            <option value="Barista">Barista/Staff</option>
+                                            <option value="Admin">Admin Manager</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Thêm</button>
+                                    </div>
+                                </form>
+                                <div class="table-responsive margin-top-md">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Tên</th>
+                                                <th>Vai trò</th>
+                                                <th>Trạng thái</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="staff-table-body">
+                                            <!-- Dynamic staff rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. DELIVERY PARTNER VIEW -->
+            <section id="delivery-view" class="portal-view">
+                <div class="delivery-layout glass-card">
+                    <div class="delivery-header">
+                        <h2><i class="fa-solid fa-shipping-fast"></i> Hệ thống Đối tác Giao hàng</h2>
+                        <button class="btn btn-secondary btn-sm" onclick="openDiagramModal('delivery')"><i class="fa-solid fa-circle-info"></i> Xem Sơ đồ Use Case</button>
+                    </div>
+
+                    <div class="delivery-split-layout">
+                        <!-- Orders awaiting delivery -->
+                        <div class="delivery-orders-list-box">
+                            <h3>Danh sách đơn hàng vận chuyển</h3>
+                            <div class="delivery-orders-list" id="delivery-orders-container">
+                                <!-- Dynamic delivery cards -->
+                            </div>
+                        </div>
+
+                        <!-- Delivery simulation dashboard -->
+                        <div class="delivery-map-simulation">
+                            <h3>Bản đồ mô phỏng lộ trình giao nhận</h3>
+                            <div id="simulation-active-card">
+                                <div class="empty-simulation">
+                                    <i class="fa-solid fa-map-location-dot"></i>
+                                    <p>Chọn một đơn hàng bên cạnh để bắt đầu hành trình mô phỏng giao hàng.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Mini Map Simulator -->
+                            <div class="sim-map-visual" id="sim-map-visual" style="display:none;">
+                                <div class="map-node shop-node"><i class="fa-solid fa-mug-hot"></i><span>Tart Shop</span></div>
+                                <div class="map-road">
+                                    <div class="delivery-vehicle" id="map-vehicle"><i class="fa-solid fa-motorcycle"></i></div>
+                                </div>
+                                <div class="map-node customer-node"><i class="fa-solid fa-house-user"></i><span>Khách Hàng</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. PAYMENT GATEWAY SIMULATOR -->
+            <section id="payment-view" class="portal-view">
+                <div class="payment-simulator-layout glass-card">
+                    <div class="payment-sim-header">
+                        <div class="gateway-logo">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <h2>Cổng Thanh Toán Điện Tử Tart Pay</h2>
+                        </div>
+                        <button class="btn btn-secondary btn-sm" onclick="openDiagramModal('payment')"><i class="fa-solid fa-circle-info"></i> Xem Sơ đồ Use Case</button>
+                    </div>
+
+                    <div class="payment-sim-box">
+                        <div id="payment-simulation-form-container">
+                            <!-- Dynamic Content loaded from customer checkout click -->
+                            <div class="empty-payment-sim">
+                                <i class="fa-solid fa-lock"></i>
+                                <h3>Không có giao dịch nào đang chờ thanh toán</h3>
+                                <p>Để thanh toán, vui lòng chuyển sang trang Khách hàng, chọn món vào giỏ hàng và chọn thanh toán bằng "Thẻ / Cổng ngoài".</p>
+                                <a href="customer.html" class="btn btn-primary margin-top-md">Quay lại trang mua hàng</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- GLOBAL DIALOGS & OVERLAYS -->
+
+    <!-- LOGIN / REGISTER DIALOG -->
+    <div class="modal-overlay" id="login-modal">
+        <div class="modal-content glass-card login-modal-box">
+            <div class="modal-header">
+                <h3>Đăng nhập hệ thống vận hành</h3>
+                <button class="close-modal-btn" onclick="closeModal('login-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="login-tabs">
+                    <button class="login-tab-btn active" style="width:100%; grid-column:span 2;">Đăng nhập</button>
+                </div>
+                
+                <!-- Login form -->
+                <form id="login-form" class="login-form-tab active" onsubmit="handleLoginSubmit(event)">
+                    <div class="form-group">
+                        <label for="login-username">Tên tài khoản</label>
+                        <input type="text" id="login-username" placeholder="Nhập tên đăng nhập..." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Mật khẩu</label>
+                        <input type="password" id="login-password" placeholder="Nhập mật khẩu..." required>
+                    </div>
+                    <!-- Quick Autofill for testing -->
+                    <div class="quick-autofill">
+                        <span>Đăng nhập nhanh:</span>
+                        <div class="autofill-tags">
+                            <span onclick="autofillLogin('barista', '123456')">Barista</span>
+                            <span onclick="autofillLogin('admin', '123456')">Admin Manager</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Đăng nhập</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- POS PAYMENT MODAL -->
+    <div class="modal-overlay" id="pos-payment-modal">
+        <div class="modal-content glass-card pos-payment-box">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-cash-register"></i> Thanh toán đơn hàng</h3>
+                <button class="close-modal-btn" onclick="closeModal('pos-payment-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="pos-pay-total-display">
+                    <span>Tổng tiền</span>
+                    <strong id="pos-pay-amount">0đ</strong>
+                </div>
+
+                <!-- Payment Method Selector -->
+                <div class="pos-pay-methods">
+                    <button class="pos-pay-method-btn active" data-method="cash" onclick="selectPosPayMethod(this,'cash')">
+                        <i class="fa-solid fa-money-bill-wave"></i><span>Tiền mặt</span>
+                    </button>
+                    <button class="pos-pay-method-btn" data-method="atm" onclick="selectPosPayMethod(this,'atm')">
+                        <i class="fa-solid fa-credit-card"></i><span>Thẻ ATM</span>
+                    </button>
+                    <button class="pos-pay-method-btn" data-method="bank" onclick="selectPosPayMethod(this,'bank')">
+                        <i class="fa-solid fa-building-columns"></i><span>Ngân hàng</span>
+                    </button>
+                </div>
+
+                <!-- Cash Panel -->
+                <div class="pos-pay-panel" id="pos-pay-cash-panel">
+                    <div class="form-group">
+                        <label>Khách đưa (đ)</label>
+                        <input type="number" id="pos-cash-received" placeholder="Nhập số tiền khách đưa..." oninput="calcChange()" style="font-size:20px;font-weight:700;text-align:center;letter-spacing:2px;">
+                    </div>
+                    <div class="pos-change-row" id="pos-change-display" style="display:none;">
+                        <span>Tiền thối lại</span>
+                        <strong id="pos-change-amount">0đ</strong>
+                    </div>
+                </div>
+
+                <!-- ATM Panel -->
+                <div class="pos-pay-panel" id="pos-pay-atm-panel" style="display:none;">
+                    <div class="pos-terminal-sim">
+                        <i class="fa-solid fa-credit-card"></i>
+                        <p>Yêu cầu khách quẹt / cắm thẻ ATM vào máy POS</p>
+                        <small>Đang chờ xác nhận từ thiết bị đầu cuối...</small>
+                    </div>
+                </div>
+
+                <!-- Bank Transfer Panel -->
+                <div class="pos-pay-panel" id="pos-pay-bank-panel" style="display:none;">
+                    <div class="pos-bank-info-box">
+                        <div class="pos-qr-box">
+                            <i class="fa-solid fa-qrcode"></i>
+                            <span>Quét QR VietQR</span>
+                        </div>
+                        <div class="pos-bank-details">
+                            <div><strong>Ngân hàng:</strong> Vietcombank</div>
+                            <div><strong>Số TK:</strong> 1234 5678 9012</div>
+                            <div><strong>Tên TK:</strong> TART SAIGON COFFEE</div>
+                            <div><strong>Nội dung:</strong> <span id="pos-bank-ref" style="color:var(--color-accent);font-weight:700;">TART-ORDER</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-block btn-lg" onclick="completePosPayment()" style="margin-top:20px;">
+                    <i class="fa-solid fa-check-circle"></i> Xác nhận đã thanh toán
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POS INVOICE MODAL -->
+    <div class="modal-overlay" id="pos-invoice-modal">
+        <div class="modal-content glass-card pos-invoice-modal-box">
+            <div id="pos-invoice-content"></div>
+            <div style="padding:0 20px 20px;">
+                <button class="btn btn-primary btn-block" onclick="closeModal('pos-invoice-modal'); resetPos()">
+                    <i class="fa-solid fa-plus"></i> Đơn hàng mới
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU ITEM ADD/EDIT MODAL -->
+    <div class="modal-overlay" id="menu-item-modal">
+        <div class="modal-content glass-card menu-item-modal-box">
+            <div class="modal-header">
+                <h3 id="menu-modal-title">Thêm món mới</h3>
+                <button class="close-modal-btn" onclick="closeModal('menu-item-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="menu-item-form" onsubmit="saveMenuItem(event)">
+                    <input type="hidden" id="menu-item-id">
+
+                    <!-- Image upload -->
+                    <div class="form-group" style="text-align:center;">
+                        <div class="menu-img-upload-preview" id="menu-img-preview">
+                            <i class="fa-solid fa-image" style="font-size:36px; color:var(--color-primary);"></i>
+                            <span style="display:block; margin-top:8px; font-size:12px; color:var(--color-text-muted);">Chưa có ảnh</span>
+                        </div>
+                        <label class="btn btn-secondary btn-sm" style="cursor:pointer; margin-top:10px; display:inline-block;">
+                            <i class="fa-solid fa-upload"></i> Tải ảnh từ máy
+                            <input type="file" id="menu-item-img-upload" accept="image/*" style="display:none;" onchange="handleMenuImageUpload(event)">
+                        </label>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Tên món</label>
+                            <input type="text" id="menu-item-name" placeholder="VD: Latte Đá..." required>
+                        </div>
+                        <div class="form-group">
+                            <label>Danh mục</label>
+                            <select id="menu-item-category">
+                                <option value="coffee">Cà phê</option>
+                                <option value="tea">Trà trái cây</option>
+                                <option value="pastry">Bánh ngọt</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label>Giá (đ)</label>
+                            <input type="number" id="menu-item-price" placeholder="40000" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Đánh giá (1-5)</label>
+                            <input type="number" id="menu-item-rating" placeholder="4.5" min="1" max="5" step="0.1" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mô tả</label>
+                        <textarea id="menu-item-desc" rows="2" placeholder="Mô tả ngắn về món..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fa-solid fa-save"></i> Lưu món
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIAGRAM VIEW MODAL -->
+    <div class="modal-overlay" id="diagram-modal">
+        <div class="modal-content glass-card diagram-modal-box">
+            <div class="modal-header">
+                <h3 id="diagram-modal-title">Sơ đồ Use Case</h3>
+                <button class="close-modal-btn" onclick="closeModal('diagram-modal')">&times;</button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="diagram-img-box">
+                    <img id="diagram-modal-img" src="" alt="Use case diagram" class="usecase-diagram-img">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- App JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
